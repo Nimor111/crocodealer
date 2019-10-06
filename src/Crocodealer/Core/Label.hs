@@ -9,6 +9,7 @@ module Crocodealer.Core.Label
 import Toml (Codec (..), Key, TomlCodec, (.=))
 import qualified Toml
 
+-- TODO remove this from here when it's part of tomland library
 disum
     :: (Functor r, Alternative w)
     => (c -> Maybe d) -- ^ Mapper for consumer
@@ -28,7 +29,7 @@ newtype Name a = Name
 
 -- | TOML Codec for the 'Name' data type.
 nameCodec :: Key -> TomlCodec (Name a)
-nameCodec name = Toml.dimap unName Name $ Toml.text name
+nameCodec name = Toml.diwrap $ Toml.text name
 
 -- | TOML Codec for the 'HexColor' data type.
 newtype HexColor = HexColor
@@ -36,7 +37,7 @@ newtype HexColor = HexColor
     } deriving (Show)
 
 hexColorCodec :: TomlCodec HexColor
-hexColorCodec = Toml.dimap unHexColor HexColor $ Toml.text "hexColor"
+hexColorCodec = Toml.dimap unHexColor HexColor $ Toml.text "color"
 
 data Label = Label
     { labelName        :: !(Name Label)

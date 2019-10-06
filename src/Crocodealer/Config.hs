@@ -16,9 +16,9 @@ newtype Repo = Repo
     { unRepo :: Text
     } deriving (Show)
 
--- | TOML Codec for the 'Repo' data type.
-repoCodec :: TomlCodec Repo
-repoCodec = Toml.dimap unRepo Repo $ Toml.text "repo"
+-- | TOML Codec for a list of 'Repo'
+repoCodec :: Toml.Key -> TomlCodec [Repo]
+repoCodec key = Toml.diwrap (Toml.arrayOf Toml._Text key)
 
 data Config = Config
     { configUsername            :: !(Maybe Text)
@@ -31,9 +31,9 @@ data Config = Config
 configCodec :: TomlCodec Config
 configCodec = Config
     <$> Toml.dioptional (Toml.text "username") .= configUsername
-    <*> Toml.dioptional (Toml.text "repository") .= configRepository
+    <*> Toml.dioptional (Toml.text "template") .= configRepository
     <*> Toml.list Label.labelRuleCodec "labelRule" .= configLabelRules
-    <*> Toml.list repoCodec "ignoredRepository" .= configIgnoredRepositories
+    <*> repoCodec "ignoredRepositories" .= configIgnoredRepositories
 
 -- | Loads the @config.toml@ file.
 loadConfig :: MonadIO m => m Config
