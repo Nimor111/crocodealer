@@ -29,7 +29,7 @@ sync userName templateRepoName fileName repos =
 fetchGitHubFile :: UserName -> RepoName -> FileName -> IO (Maybe Text)
 fetchGitHubFile userName repoName fileName = do
     let url = "https://raw.githubusercontent.com/" <> unUserName userName <> "/" <> unRepoName repoName <> "/master/" <> unFileName fileName
-    (sequence . Just) ("curl" $| ["-s", "--fail", url]) $? pure Nothing
+    (Just <$> "curl" $| ["-s", "--fail", url]) $? pure Nothing
 
 printFileDiff :: UserName -> RepoName -> FileStatus -> IO ()
 printFileDiff (UserName user) (RepoName repo) = \case
